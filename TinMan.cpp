@@ -3,7 +3,6 @@
 //TinMan constructor
 TinMan::TinMan():wheels(1,2), stick(1)
 {
-	dash->init();
 	wheels.SetExpiration(0.1);
 }
 
