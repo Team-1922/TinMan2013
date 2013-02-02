@@ -1,5 +1,13 @@
+//******************************************************************************
+//
+// File: ButtonActivated.h
+//
+// Description: Include file for ButtonActivated object
+//
+//******************************************************************************
 #ifndef ButtonActivated_h
 #define ButtonActivated_h
+
 
 #include "WPILib.h"
 
@@ -22,7 +30,7 @@ protected:
 
    int       btnNum_;            // button on joystick
 
-   bool      lastButtonState_;    // save last button state
+   bool      lastButtonState_;   // save last button state
 
 };
 
