@@ -4,6 +4,8 @@
 #include "WPILib.h"
 #include "ButtonActivated.h"
 
+#include "RobotDefines.h"
+
 //Class definiton of the thrower.
 class Thrower
 {
@@ -19,9 +21,11 @@ public:
 	//Check if the thrower is healthy or not.
 	bool isHealthy();
 	
+	void updateMotor();
+	
 private:
 	//Motor that spins and sensor that tracks speed.
-	Talon ThrowerMotor_;
+	Jaguar ThrowerMotor_;
 	DigitalInput SpeedSensor_;
 	
 	//Joystick inputs to recognize speed.
@@ -29,6 +33,13 @@ private:
 	ButtonActivated MidSpeed_;
 	ButtonActivated HighSpeed_;
 	Joystick *stick_;
+	
+	//Check if the thrower is based on RPM or direct control.
+	bool isUsingRPM_;
+	
+	//Variables for speed and RPM.
+	float speed_;
+	int rpm_;
 };
 
 #endif
