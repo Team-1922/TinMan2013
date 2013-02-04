@@ -9,7 +9,7 @@ class Thrower
 {
 public:
 	//Constructor and deconstructor.
-	Thrower();
+	Thrower(Joystick*);
 	~Thrower();
 	
 	//Set the power of the thrower using either direct speed, or RPM.
@@ -21,7 +21,7 @@ public:
 	
 private:
 	//Motor that spins and sensor that tracks speed.
-	Jaguar ThrowerMotor_;
+	Talon ThrowerMotor_;
 	DigitalInput SpeedSensor_;
 	
 	//Joystick inputs to recognize speed.
