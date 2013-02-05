@@ -23,6 +23,9 @@ public:
    //*** returns activated state ***
    bool isActivated();
 
+   //*** return pressed state ***
+   bool isPressed();
+
 
 protected:
 

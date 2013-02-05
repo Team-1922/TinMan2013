@@ -54,3 +54,20 @@ bool newButtonState = false;
 	return activated;
 }
 
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * This method detects if the associated joystick button has been pressed.
+ * 
+ * @return TRUE if the joystick button is pressed, else FALSE
+ */
+//******************************************************************************
+bool ButtonActivated::isPressed()
+{
+
+	//*** get current button state ***
+	return joyStick_->GetRawButton( btnNum_ );
+}
+
+

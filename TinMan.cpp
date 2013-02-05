@@ -1,32 +1,147 @@
+//******************************************************************************
+//
+// File: TinMan.cpp
+//
+// Description: This is the main object for the Robot
+//
+//******************************************************************************
 #include "TinMan.h"
 
-//TinMan constructor
-TinMan::TinMan():wheels(1,2), stick(1)
-{
-	wheels.SetExpiration(0.1);
-}
+//*** constants ***
 
-//Run the autonomous
-void TinMan::Autonomous()
-{
-	wheels.SetSafetyEnabled(false);
-}
+#define REAL_TIME_DELAY (0.001)
 
-//Run teleop mode.
-void TinMan::OperatorControl()
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Constructor
+ */ 
+TinMan::TinMan(void) :
+   dsTask_(     "DsTask",     (FUNCPTR)dsTask     ),
+   visionTask_( "VisionTask", (FUNCPTR)visionTask )
 {
-	wheels.SetSafetyEnabled(true);
+
+   //*** create joystick objects ***
+   driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK );
+   throwerStick_ = new Joystick( PORT_THROWER_JOYSTICK );
+
+   //*** create subsystem objects ***
+   drive_   = new DriveTrain;
+   shooter_ = new Shooter( driveStick_, throwerStick_ );
+   climber_ = new Climber;
+
+
+	//*** get pointer to driver station ***
+	ds_ = DriverStation::GetInstance();
 	
-	//While teleop is running.
-	while (IsOperatorControl())
-	{
-		wheels.ArcadeDrive(&stick);
-		Wait(0.005);
-	} 
+	//*** clear 'end ds thread' flag ***
+	cancelDsThread_ = false;
+	
 }
 
-void TinMan::Test()
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Destructor
+ */ 
+TinMan::~TinMan(void)
 {
+	//*** set flag for threads to cancel ***
+	cancelDsThread_     = true;
+	cancelVisionThread_ = true;
+	
 }
 
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Runs the motors with arcade steering. 
+ */
+void TinMan::OperatorControl(void)
+{
+	//*** start the driver station input thread ***
+	dsTask_.Start( (INT32)this );
+	
+	//*** main while loop ***
+	while ( IsOperatorControl() )
+	{
+      //*** Check all real-time inputs (limit switches, etc ***
+      checkRealTimeInputs();
+
+		//*** wait a short amount ***
+		Wait( REAL_TIME_DELAY );
+	}
+}
+
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Check inputs for each subsystem 
+ */
+void TinMan::checkInputs()
+{
+   //*** DriveTrain ***
+   drive_->checkInputs();
+
+   //*** Shooter ***
+   shooter_->checkInputs();
+
+   //*** Climber ***
+   climber_->checkInputs();
+}
+
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * check real-time inputs for each subsystem 
+ */
+void TinMan::checkRealTimeInputs()
+{
+   //*** DriveTrain ***
+   drive_->checkRealTimeInputs();
+
+   //*** Shooter ***
+   shooter_->checkRealTimeInputs();
+
+   //*** Climber ***
+   climber_->checkRealTimeInputs();
+}
+	
+
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Driver Station Input thread 
+ */
+void TinMan::dsTask( TinMan* tm )
+{
+	//*** get reference to driver station ***
+	DriverStation& ds = *(DriverStation::GetInstance());
+	
+	//*** get reference to TinMan ***
+	TinMan& tinMan = *tm;
+	
+	//*** do while in teleop and not cancelled ***
+	do
+	{
+		//*** wait for input from the driver station ***
+		ds.WaitForData();
+
+      //*** check all driverstation inputs ***
+      tinMan.checkInputs();
+		
+	} while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
+}
+
+
+//************************************
+//*** DO NOT REMOVE THE LAST LINE ****
+//************************************
 START_ROBOT_CLASS(TinMan);
+
