@@ -7,9 +7,9 @@
  */
 void TinMan::Autonomous(void)
 {
-	//*** start the vision thread ***
-	visionTask_.Start( (INT32)this );
-	
+   //*** initialize the robot ***
+   initialize();
+
    //*** REPLACE THIS WITH AUTONOMOUS CODE ***
 
    while ( IsAutonomous() )

@@ -17,6 +17,7 @@
 /**
  * Constructor
  */ 
+//******************************************************************************
 TinMan::TinMan(void) :
    dsTask_(     "DsTask",     (FUNCPTR)dsTask     ),
    visionTask_( "VisionTask", (FUNCPTR)visionTask )
@@ -37,6 +38,8 @@ TinMan::TinMan(void) :
 	
 	//*** clear 'end ds thread' flag ***
 	cancelDsThread_ = false;
+
+   initialized_ = false;
 	
 }
 
@@ -46,6 +49,7 @@ TinMan::TinMan(void) :
 /**
  * Destructor
  */ 
+//******************************************************************************
 TinMan::~TinMan(void)
 {
 	//*** set flag for threads to cancel ***
@@ -58,10 +62,37 @@ TinMan::~TinMan(void)
 //******************************************************************************
 //******************************************************************************
 /**
+ * Initialize the robot 
+ */
+//******************************************************************************
+void TinMan::initialize()
+{
+   //*** if already initialized, then get out ***
+   if ( initialized_ ) return;
+
+   //*** start the vision thread ***
+   visionTask_.Start( (INT32)this );
+
+   //*** initialize subsystems ***
+   shooter_->initialize();
+   climber_->initialize();
+
+   //*** set initialized flag ***
+   initialized_ = true;
+}
+
+
+//******************************************************************************
+//******************************************************************************
+/**
  * Runs the motors with arcade steering. 
  */
+//******************************************************************************
 void TinMan::OperatorControl(void)
 {
+   //*** initialize the robot (if not already done in autonomous) ***
+   initialize();
+
 	//*** start the driver station input thread ***
 	dsTask_.Start( (INT32)this );
 	
@@ -82,6 +113,7 @@ void TinMan::OperatorControl(void)
 /**
  * Check inputs for each subsystem 
  */
+//******************************************************************************
 void TinMan::checkInputs()
 {
    //*** DriveTrain ***
@@ -100,6 +132,7 @@ void TinMan::checkInputs()
 /**
  * check real-time inputs for each subsystem 
  */
+//******************************************************************************
 void TinMan::checkRealTimeInputs()
 {
    //*** DriveTrain ***
@@ -119,24 +152,25 @@ void TinMan::checkRealTimeInputs()
 /**
  * Driver Station Input thread 
  */
+//******************************************************************************
 void TinMan::dsTask( TinMan* tm )
 {
-	//*** get reference to driver station ***
-	DriverStation& ds = *(DriverStation::GetInstance());
+   //*** get reference to driver station ***
+   DriverStation& ds = *(DriverStation::GetInstance());
 	
-	//*** get reference to TinMan ***
-	TinMan& tinMan = *tm;
+   //*** get reference to TinMan ***
+   TinMan& tinMan = *tm;
 	
-	//*** do while in teleop and not cancelled ***
-	do
-	{
-		//*** wait for input from the driver station ***
-		ds.WaitForData();
+   //*** do while in teleop and not cancelled ***
+   do
+      {
+      //*** wait for input from the driver station ***
+      ds.WaitForData();
 
       //*** check all driverstation inputs ***
       tinMan.checkInputs();
 		
-	} while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
+      } while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
 }
 
 

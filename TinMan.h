@@ -72,10 +72,11 @@ protected:
 	
 	bool           cancelDsThread_;      // flag to cancel ds thread
 	bool           cancelVisionThread_;  // flag to cancel vision thread
+
+   bool           initialized_;     // initialized flag
 	
 	
-   //*** AUTONOMOUS ***
-   void doAutonomous();
+   void initialize();
 	
 	//*** THREADS ***
 	
