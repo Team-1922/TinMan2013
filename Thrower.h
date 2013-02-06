@@ -6,6 +6,10 @@
 
 #include "RobotDefines.h"
 
+const float LOW_SPEED = 0.3;
+const float MID_SPEED = 0.6;
+const float HIGH_SPEED = 0.9;
+
 //Class definiton of the thrower.
 class Thrower
 {
@@ -14,9 +18,12 @@ public:
 	Thrower(Joystick*);
 	~Thrower();
 	
+	//Check for inputs
+	void checkInputs();
+	void checkRealTimeInputs();
+	
 	//Set the power of the thrower using either direct speed, or RPM.
 	void setSpeed(float);
-	void setRPM(int);
 	
 	//Check if the thrower is healthy or not.
 	bool isHealthy();
@@ -33,13 +40,6 @@ private:
 	ButtonActivated MidSpeed_;
 	ButtonActivated HighSpeed_;
 	Joystick *stick_;
-	
-	//Check if the thrower is based on RPM or direct control.
-	bool isUsingRPM_;
-	
-	//Variables for speed and RPM.
-	float speed_;
-	int rpm_;
 };
 
 #endif
