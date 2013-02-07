@@ -9,7 +9,7 @@ Shooter::Shooter(Joystick* driveJoystick, Joystick* throwerJoystick)
 	 * to be more clear, even if it seems obvious what stick it is */
 	thrower_ = new Thrower(throwerJoystick_);
 	feeder_ = new Feeder(throwerJoystick_);
-	shooterTask_ = new Task((FUNCPTR)_shoot, "SHOOTER_SHOOT");
+	shooterTask_ = new Task("SHOOTER_SHOOT", (FUNCPTR)_shoot);
 }
 
 void Shooter::initialize()
