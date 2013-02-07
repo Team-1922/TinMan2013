@@ -1,20 +1,53 @@
-//******************************************************************************
-//
-// File: Shooter.cpp
-//
-// Description: This is the Shooter object for the TinMan
-//
-//******************************************************************************
-#include "TinMan.h"
+
+#ifndef DRIVETRAIN_H
+#define DRIVETRAIN_H
+
+#include "WPILib.h"
+#include "RobotDefines.h"
+
+
+//***********************************************************
 
 class DriveTrain
+
 {
+
+
 public:
+	
+	
+	//constructor
+	 DriveTrain(void);
+	
+	void opDrive();
+	void autoDrive();
 
-   DriveTrain() {};
+	
+protected:
+	
+	//Variables
+	
+	// Motors
+	Talon* rightDrive;
+	Talon* leftDrive;
+	Talon* bothDrive; //sets values for both motors at same time
+	
+	//Joystick
+	Joystick *stick;
 
-   void checkInputs() {};
+	//encoder
+	Encoder* leftEncode;
+	Encoder* rightEncode;
+	
+	//Autonomous / functions
+	
+	void driveStraight_(int inches);
+	void Spin_(int degrees);
+	void Turn_(int inches, int degrees);
 
-   void checkRealTimeInputs() {};
+
+
+
 };
+#endif
 
