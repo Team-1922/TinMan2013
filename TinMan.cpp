@@ -28,16 +28,16 @@ TinMan::TinMan(void) :
    throwerStick_ = new Joystick( PORT_THROWER_JOYSTICK );
 
    //*** create subsystem objects ***
-   drive_   = new DriveTrain;
+   drive_   = new DriveTrain( driveStick_ );
    shooter_ = new Shooter( driveStick_, throwerStick_ );
    climber_ = new Climber;
 
 
-	//*** get pointer to driver station ***
-	ds_ = DriverStation::GetInstance();
+   //*** get pointer to driver station ***
+   ds_ = DriverStation::GetInstance();
 	
-	//*** clear 'end ds thread' flag ***
-	cancelDsThread_ = false;
+   //*** clear 'end ds thread' flag ***
+   cancelDsThread_ = false;
 
    initialized_ = false;
 	
