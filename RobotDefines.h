@@ -9,8 +9,8 @@
 #define RobotDefines_h
 
 // PWMs
-#define PWM_LEFT_DRIVE_MOTOR       (1)
-#define PWM_RIGHT_DRIVE_MOTOR      (2)
+#define PWM_LEFT_DRIVE_MOTOR       (2)
+#define PWM_RIGHT_DRIVE_MOTOR      (1)
 #define PWM_THROWER_MOTOR          (3)
 #define PWM_CLIMBER_MOTOR1         (4)
 #define PWM_CLIMBER_MOTOR2         (5)
