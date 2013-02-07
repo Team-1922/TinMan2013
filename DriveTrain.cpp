@@ -8,16 +8,16 @@ DriveTrain::DriveTrain( Joystick* joystick )
 	
 	//initialize motors
 	
-	rightDrive = new Jaguar(PWM_RIGHT_DRIVE_MOTOR);	
-	leftDrive  = new jaguar(PWM_LEFT_DRIVE_MOTOR);
+	rightDrive_ = new Jaguar(PWM_RIGHT_DRIVE_MOTOR);	
+	leftDrive_  = new jaguar(PWM_LEFT_DRIVE_MOTOR);
 //???	bothDrive = rightDrive, leftDrive;
 	
 	//Joystick
-	stick = joystick;
+	stick_ = joystick;
 	
 	//Encoders
-	leftEncode = new Encoder(1,2);
-	rightEncode = new Encoder(1,2);
+	leftEncode_ = new Encoder(1,2);
+	rightEncode_ = new Encoder(1,2);
 
 }
 
@@ -26,8 +26,8 @@ DriveTrain::DriveTrain( Joystick* joystick )
 void DriveTrain::checkInputs()
 {
 	//Get the x and y axis and assign them
-	float xAxis =  stick->GetX();
-	float yAxis = stick->GetY();			
+	float xAxis =  stick_->GetX();
+	float yAxis = stick_->GetY();			
 			
 	//Create arcade drive values
 	float leftVal = (xAxis + yAxis)/ 2;
@@ -35,8 +35,8 @@ void DriveTrain::checkInputs()
 			
 			
 	//Assigning values to motors
-	leftDrive->Set(leftVal);
-	rightDrive->Set(rightVal);
+	leftDrive_->Set(leftVal);
+	rightDrive_->Set(rightVal);
 }
 
 //************************************************************************
@@ -45,8 +45,8 @@ void DriveTrain::autoDrive()
 {
 	// the autonomous routine will go here.
 
-	rightEncode->Get();
-	leftEncode->Get();
+	rightEncode_->Get();
+	leftEncode_->Get();
 
 
 
@@ -57,7 +57,7 @@ void DriveTrain::autoDrive()
 }
 //************************************************************************
 
-void DriveTrain::driveStraight_(int inches)
+void DriveTrain::driveStraight(int inches)
 {	
 
 	
@@ -71,7 +71,7 @@ void DriveTrain::driveStraight_(int inches)
 
 //************************************************************************
 
-void DriveTrain::Spin_(int degrees)
+void DriveTrain::spin(int degrees)
 {
 	
 
@@ -81,7 +81,7 @@ void DriveTrain::Spin_(int degrees)
 
 //************************************************************************
 
-void DriveTrain::Turn_(int inches, int degrees)
+void DriveTrain::turn(int inches, int degrees)
 {
 	
 
