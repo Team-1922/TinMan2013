@@ -1,4 +1,3 @@
-
 #ifndef DRIVETRAIN_H
 #define DRIVETRAIN_H
 
@@ -17,10 +16,16 @@ public:
 	
 	
 	//constructor
-	 DriveTrain(void);
+	 DriveTrain( Joystick* joystick );
 	
-	void opDrive();
+	void checkInputs();
 	void autoDrive();
+
+	//Autonomous / functions
+	
+	void driveStraight( int inches );
+	void spin( int degrees );
+	void turn( int inches, int degrees );
 
 	
 protected:
@@ -28,25 +33,16 @@ protected:
 	//Variables
 	
 	// Motors
-	Talon* rightDrive;
-	Talon* leftDrive;
-	Talon* bothDrive; //sets values for both motors at same time
+	Jaguar* rightDrive_;
+	Jaguar* leftDrive_;
+//	Talon* bothDrive; //sets values for both motors at same time
 	
 	//Joystick
-	Joystick *stick;
+	Joystick *stick_;
 
 	//encoder
-	Encoder* leftEncode;
-	Encoder* rightEncode;
-	
-	//Autonomous / functions
-	
-	void driveStraight_(int inches);
-	void Spin_(int degrees);
-	void Turn_(int inches, int degrees);
-
-
-
+	Encoder* leftEncode_;
+	Encoder* rightEncode_;
 
 };
 #endif
