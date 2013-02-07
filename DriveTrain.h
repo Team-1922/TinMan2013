@@ -19,6 +19,9 @@ public:
 	 DriveTrain( Joystick* joystick );
 	
 	void checkInputs();
+	
+	void checkRealTimeInputs();
+	
 	void autoDrive();
 
 	//Autonomous / functions
