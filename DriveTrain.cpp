@@ -39,6 +39,15 @@ void DriveTrain::checkInputs()
 	rightDrive_->Set(rightVal);
 }
 
+
+//************************************************************************
+void DriveTrain::checkRealTimeInputs()
+{
+	
+	
+}
+
+
 //************************************************************************
 
 void DriveTrain::autoDrive()
