@@ -3,16 +3,16 @@
 
 #include "WPILib.h"
 #include "RobotDefines.h"
+
 #include "DriveTrain.h"
 #include "Shooter.h"
-#include "Climber.h"
+//#include "Climber.h"
 
 
 //******************************************************************************
 //******************************************************************************
 class TinMan : public SimpleRobot
 {
-
 public:
 	
 	//*** constructor ***
@@ -30,11 +30,11 @@ public:
 	//*** test mode ***
 	void Test(void);
 
-   //*** check inputs for each subsystem ***
-   void checkInputs();
+	//*** check inputs for each subsystem ***
+	void checkInputs();
 	
-   //*** check real-time inputs for each subsystem ***
-   void checkRealTimeInputs();
+	//*** check real-time inputs for each subsystem ***
+	void checkRealTimeInputs();
 	
 	//*** indicates DS thread should be cancelled ***
 	bool dsThreadCancel() { return cancelDsThread_; };
@@ -42,49 +42,35 @@ public:
 	//*** indicates DS thread should be cancelled ***
 	bool visionThreadCancel() { return cancelVisionThread_; };
 	
-	
-	
-	
 protected:
 	
-   //*** SUBSYSTEMS ***
-
-   DriveTrain     *drive_;           // robot drive subsystem
-
-   Shooter        *shooter_;         // frisbee shooter subsystem
-
-   Climber        *climber_;         // Climber subsystem
-
-
-   //*** INPUT ***
-
-   Joystick       *driveStick_;      // Drive joystick
-   Joystick       *throwerStick_;    // Thrower control joystick
-
-
-   //*** MISC VARIABLES ***
-
-	Task           dsTask_;          // Driverstation task
-
-   Task           visionTask_;      // Vision task
+	//*** SUBSYSTEMS ***
+	//DriveTrain		*drive_;				// robot drive subsystem
+	RobotDrive		*drive_;
+	Shooter			*shooter_;				// frisbee shooter subsystem
+	//Climber     	*climber_;				// Climber subsystem
 	
-	DriverStation *ds_;              // Driverstation pointer
+	//*** INPUT ***
+	Joystick    	*driveStick_;			// Drive joystick
+	Joystick    	*throwerStick_;			// Thrower control joystick
+      
+    //*** MISC VARIABLES ***
+    Task        	dsTask_;				// Driverstation task
+    Task        	visionTask_;			// Vision task
+    DriverStation 	*ds_;					// Driverstation pointer
+	bool      		cancelDsThread_;		// flag to cancel ds thread
+	bool        	cancelVisionThread_;	// flag to cancel vision thread
+    bool        	initialized_;			// initialized flag
 	
-	bool           cancelDsThread_;      // flag to cancel ds thread
-	bool           cancelVisionThread_;  // flag to cancel vision thread
-
-   bool           initialized_;     // initialized flag
-	
-	
-   void initialize();
+    void initialize();
 	
 	//*** THREADS ***
 	
 	//*** DriverStation thread ***
 	static void dsTask( TinMan* p );
 	
-   //*** Vision thread ***                             
-   static void visionTask( TinMan *p );
+	//*** Vision thread ***                             
+	static void visionTask( TinMan *p );
 };
 
 #endif

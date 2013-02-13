@@ -1,30 +1,32 @@
 #include "Shooter.h"
 
-Shooter::Shooter(Joystick* driveJoystick, Joystick* throwerJoystick)
+Shooter::Shooter(Joystick* driveJoystick, Joystick* throwerJoystick):
+	//shooterTask_("SHOOTER_SHOOT", (FUNCPTR)_shoot),
+	thrower_(throwerJoystick),
+	feeder_(throwerJoystick)
 {
 	driveJoystick_ = driveJoystick;
 	throwerJoystick_ = throwerJoystick;
-	/* I don't know if throwerJoystick_ is the correct joystick
-	 * to pass to these. Whoever wrote Thrower and Feeder needs
-	 * to be more clear, even if it seems obvious what stick it is */
-	thrower_ = new Thrower(throwerJoystick_);
-	feeder_ = new Feeder(throwerJoystick_);
-	shooterTask_ = new Task("SHOOTER_SHOOT", (FUNCPTR)_shoot);
 }
 
 void Shooter::initialize()
 {
 	// TODO: Implementation
+	feeder_.initialize();
 }
 
 void Shooter::checkInputs()
 {
 	// TODO: Implementation
+	feeder_.checkInputs();
+	thrower_.checkInputs();
 }
 
 void Shooter::checkRealTimeInputs()
 {
 	// TODO: Implementation
+	feeder_.checkRealTimeInputs();
+	thrower_.checkRealTimeInputs();
 }
 
 bool Shooter::isShooting()
@@ -38,7 +40,9 @@ bool Shooter::isShooting()
 
 bool Shooter::shoot()
 {
-	return shooterTask_->Start();
+	//feeder_.shoot();
+	return true;
+	//return shooterTask_.Start();
 }
 
 int Shooter::shooterRPM()
@@ -53,7 +57,7 @@ bool Shooter::isHealthy()
 	return true;
 }
 
-int Shooter::_shoot()
+/*int Shooter::_shoot()
 {
 	// TODO: Finish implementation
 	// Lock the mutex within this scope
@@ -61,5 +65,6 @@ int Shooter::_shoot()
 	isShooting_ = true;
 	
 	isShooting_ = false;
+	//feeder_.shoot();
 	return 0;
-}
+}*/

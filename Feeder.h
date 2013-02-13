@@ -6,7 +6,7 @@
 
 #include "RobotDefines.h"
 
-const float SHOOT_SPEED = 0.5;
+const float FEED_SPEED = 0.5;
 
 //Class declaration for the feeder.
 class Feeder
@@ -23,25 +23,17 @@ public:
 	void checkRealTimeInputs();
 	
 private:
-	//Motor that controls the feeder.
-	Jaguar FeederMotor_;
 	
-	//Button to make feeder shoot.
-	ButtonActivated ShootButton_;
+	Jaguar				FeedMotor_;		//Feeder motor.
+	ButtonActivated 	FeedButton_;	//Button to feed.
+	DigitalInput		FeedSwitch_;	//Switch to detect if feeding.
 	
-	//Limit switch to check if shooting.
-	DigitalInput ShooterSwitch_;
+	bool isFeeding_;	//Store the state of feeding.
+	bool isStarting_;	//Store the state if it is starting.
 	
-	//Boolean to store shooting state.
-	bool isShooting_;
-	bool isStarting_;
+	void feed();	//Feed the frisbee into the thrower.
 	
-	//Shoot the feeder.
-	void shoot();
-	
-	//Check if the feeder can shoot.
-	bool canShoot();
-	bool isHealthy();
+	bool canFeed();		//Check if the feeder can feed.
 };
 
 #endif

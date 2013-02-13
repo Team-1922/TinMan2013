@@ -2,26 +2,21 @@
 #define DRIVETRAIN_H
 
 #include "WPILib.h"
+#include "Math.h"
 #include "RobotDefines.h"
 
 
 //***********************************************************
 
 class DriveTrain
-
 {
-
-
 public:
-	
-	
 	//constructor
-	 DriveTrain( Joystick* joystick );
+	DriveTrain( Joystick* joystick );
+	~DriveTrain();
 	
 	void checkInputs();
-	
 	void checkRealTimeInputs();
-	
 	void autoDrive();
 
 	//Autonomous / functions
@@ -32,21 +27,20 @@ public:
 
 	
 protected:
-	
-	//Variables
-	
 	// Motors
 	Jaguar* rightDrive_;
 	Jaguar* leftDrive_;
-//	Talon* bothDrive; //sets values for both motors at same time
 	
 	//Joystick
 	Joystick *stick_;
-
-	//encoder
-	Encoder* leftEncode_;
-	Encoder* rightEncode_;
-
+	
+	//Variables for input modifier.
+	int curveModifier;
+	float startingPoint;
+	float ignoreRange;
+	
+	//Modify the joystick value.
+	float modifyJoystick(float);
 };
 #endif
 

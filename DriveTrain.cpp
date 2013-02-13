@@ -5,35 +5,26 @@
 //Constructor
 DriveTrain::DriveTrain( Joystick* joystick )
 {
-	
 	//initialize motors
-	
 	rightDrive_ = new Jaguar(PWM_RIGHT_DRIVE_MOTOR);	
-	leftDrive_  = new jaguar(PWM_LEFT_DRIVE_MOTOR);
-//???	bothDrive = rightDrive, leftDrive;
+	leftDrive_  = new Jaguar(PWM_LEFT_DRIVE_MOTOR);
 	
 	//Joystick
 	stick_ = joystick;
-	
-	//Encoders
-	leftEncode_ = new Encoder(1,2);
-	rightEncode_ = new Encoder(1,2);
-
 }
 
 //************************************************************************
 
 void DriveTrain::checkInputs()
 {
-	//Get the x and y axis and assign them
-	float xAxis =  stick_->GetX();
-	float yAxis = stick_->GetY();			
-			
+	//Retrieve and modify the joystick value.
+	float xAxis = modifyJoystick(stick_->GetX());
+	float yAxis = -modifyJoystick(stick_->GetY());
+	
 	//Create arcade drive values
-	float leftVal = (xAxis + yAxis)/ 2;
-	float rightVal = (xAxis - yAxis) / 2;
-			
-			
+	float rightVal = -(yAxis - xAxis) / 2.0;
+	float leftVal = (yAxis + xAxis) / 2.0;
+	
 	//Assigning values to motors
 	leftDrive_->Set(leftVal);
 	rightDrive_->Set(rightVal);
@@ -43,8 +34,6 @@ void DriveTrain::checkInputs()
 //************************************************************************
 void DriveTrain::checkRealTimeInputs()
 {
-	
-	
 }
 
 
@@ -52,49 +41,49 @@ void DriveTrain::checkRealTimeInputs()
 
 void DriveTrain::autoDrive()
 {
-	// the autonomous routine will go here.
-
-	rightEncode_->Get();
-	leftEncode_->Get();
-
-
-
-
-
-
-
 }
 //************************************************************************
 
 void DriveTrain::driveStraight(int inches)
-{	
-
-	
-	
-	
-	
-	
-	
-
+{
 }
 
 //************************************************************************
 
 void DriveTrain::spin(int degrees)
 {
-	
-
-
-
 }
 
 //************************************************************************
 
 void DriveTrain::turn(int inches, int degrees)
 {
-	
-
-
 }
 
-
+float DriveTrain::modifyJoystick(float axis)
+{
+	//Return 0 if the axis is between the ignore range.
+	if(axis < ignoreRange && axis > -ignoreRange) {
+		return 0.0;
+	}
+	
+	//Create a variable to hold the modified input.
+	float modified = 0;
+	
+	//Check if the axis is positive or negative.
+	if(axis > 0) {
+		modified = powf(axis, curveModifier);
+		modified /= startingPoint;
+		modified += (1.0 - (1.0 / startingPoint));
+	}
+	else if(axis < 0) {
+		if(curveModifier % 2 == 0) {
+			modified = -powf(axis, curveModifier);
+			modified /= startingPoint;
+			modified -= (1.0 - (1.0 / startingPoint));
+		}
+	}
+	
+	//Return the modified value.
+	return modified;
+}

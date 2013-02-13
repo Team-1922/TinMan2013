@@ -6,9 +6,11 @@
 
 #include "RobotDefines.h"
 
-const float LOW_SPEED = 0.3;
-const float MID_SPEED = 0.6;
-const float HIGH_SPEED = 0.9;
+const float LOW_SPEED = -0.3;
+const float MID_SPEED = -0.6;
+const float HIGH_SPEED = -0.9;
+
+const float RPM_TIME = 0.2;
 
 //Class definiton of the thrower.
 class Thrower
@@ -28,7 +30,7 @@ public:
 	//Check if the thrower is healthy or not.
 	bool isHealthy();
 	
-	void updateMotor();
+	void updateRPM();
 	
 private:
 	//Motor that spins and sensor that tracks speed.
@@ -40,6 +42,11 @@ private:
 	ButtonActivated MidSpeed_;
 	ButtonActivated HighSpeed_;
 	Joystick *stick_;
+	
+	//Create variables and a static function to check the RPM.
+	Notifier ThrowerRPM_;
+	Counter Revolutions_;
+	static void updateRPMFunction(Thrower*);
 };
 
 #endif

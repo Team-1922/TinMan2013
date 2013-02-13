@@ -24,13 +24,18 @@ TinMan::TinMan(void) :
 {
 
    //*** create joystick objects ***
-   driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK );
+   driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK  );
    throwerStick_ = new Joystick( PORT_THROWER_JOYSTICK );
 
    //*** create subsystem objects ***
-   drive_   = new DriveTrain( driveStick_ );
+   //drive_   = new DriveTrain( driveStick_ );
+   
+   drive_ = new RobotDrive(PWM_LEFT_DRIVE_MOTOR, PWM_RIGHT_DRIVE_MOTOR);
+   drive_->SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
+   drive_->SetInvertedMotor(RobotDrive::kRearRightMotor, true);
+   
    shooter_ = new Shooter( driveStick_, throwerStick_ );
-   climber_ = new Climber;
+   //climber_ = new Climber;
 
 
    //*** get pointer to driver station ***
@@ -67,15 +72,23 @@ TinMan::~TinMan(void)
 //******************************************************************************
 void TinMan::initialize()
 {
+	SmartDashboard::PutString("initialize()", "Beginning");
+	
    //*** if already initialized, then get out ***
    if ( initialized_ ) return;
 
+	SmartDashboard::PutString("initialize()", "Past check");
+	
    //*** start the vision thread ***
    visionTask_.Start( (INT32)this );
 
+	SmartDashboard::PutString("initialize()", "Past vision task start");
+
    //*** initialize subsystems ***
    shooter_->initialize();
-   climber_->initialize();
+   //climber_->initialize();
+
+	SmartDashboard::PutString("initialize()", "Past Shooter initialize");
 
    //*** set initialized flag ***
    initialized_ = true;
@@ -90,8 +103,8 @@ void TinMan::initialize()
 //******************************************************************************
 void TinMan::OperatorControl(void)
 {
-   //*** initialize the robot (if not already done in autonomous) ***
-   initialize();
+	//*** initialize the robot (if not already done in autonomous) ***
+	initialize();
 
 	//*** start the driver station input thread ***
 	dsTask_.Start( (INT32)this );
@@ -99,8 +112,8 @@ void TinMan::OperatorControl(void)
 	//*** main while loop ***
 	while ( IsOperatorControl() )
 	{
-      //*** Check all real-time inputs (limit switches, etc ***
-      checkRealTimeInputs();
+		//*** Check all real-time inputs (limit switches, etc ***
+		checkRealTimeInputs();
 
 		//*** wait a short amount ***
 		Wait( REAL_TIME_DELAY );
@@ -117,13 +130,13 @@ void TinMan::OperatorControl(void)
 void TinMan::checkInputs()
 {
    //*** DriveTrain ***
-   drive_->checkInputs();
+   //drive_->checkInputs();
 
    //*** Shooter ***
    shooter_->checkInputs();
 
    //*** Climber ***
-   climber_->checkInputs();
+   //climber_->checkInputs();
 }
 
 
@@ -136,13 +149,14 @@ void TinMan::checkInputs()
 void TinMan::checkRealTimeInputs()
 {
    //*** DriveTrain ***
-   drive_->checkRealTimeInputs();
+   //drive_->checkRealTimeInputs();
+	drive_->ArcadeDrive(driveStick_);
 
    //*** Shooter ***
    shooter_->checkRealTimeInputs();
 
    //*** Climber ***
-   climber_->checkRealTimeInputs();
+   //climber_->checkRealTimeInputs();
 }
 	
 
