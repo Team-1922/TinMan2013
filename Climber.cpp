@@ -11,24 +11,22 @@
 
 
 const float WinchStoppedSpeed =  0.0;
-const float WinchOutSpeed     =  1.0;
-const float WinchInSpeed      = -1.0;
+
+const float joystickThreashold = 0.01;
 
 
 //******************************************************************************
 //******************************************************************************
 Climber::Climber( Joystick *actionStick ) :
    stick_( actionStick ),
-   motor1_( PWM_CLIMBER_MOTOR1 ),
-   motor2_( PWM_CLIMBER_MOTOR2 ),
-   brake_( RELAY_CLIMBER_BRAKE ),
+   winchMotor_( PWM_CLIMBER_MOTOR ),
+   armBrake_( SOL_ARM_BRAKE ),
+   winchBrake_( SOL_WINCH_BRAKE ),
    farLimit_( DIG_IN_FAR_LIMIT ),
    nearLimit_( DIG_IN_NEAR_LIMIT ),
-   armPot_( ANA_IN_ARM ),
    winchAction_( WINCH_STOPPED ),
-   winchOutBtn_( actionStick, BTN_J2_WINCH_OUT ),
-   winchInBtn_( actionStick, BTN_J2_WINCH_IN ),
-   brakeBtn_( actionStick, BTN_J2_BRAKE )
+   winchEnableBtn_( actionStick, BTN_J2_WINCH_ENABLE ),
+   brakeBtn_( actionStick, BTN_J2_WINCH_BRAKE )
 {
 }
 
@@ -37,15 +35,6 @@ Climber::Climber( Joystick *actionStick ) :
 //******************************************************************************
 void Climber::initialize()
 {
-   //*** make sure we are pulled in ***
-   if ( !nearLimitReached() )
-      {
-      //*** exclusive access ***
-      Synchronized sync( motorSem_ );
-
-      //*** start it moving in ***
-      winchIn();
-      }
 }
 
 
@@ -53,30 +42,60 @@ void Climber::initialize()
 //******************************************************************************
 void Climber::checkInputs()
 {
-   //*** exclusive access ***
-   Synchronized sync( motorSem_ );
+   float speed   = WinchStoppedSpeed;
+   bool  enabled = winchEnableBtn_.isPressed();
+
+   //*** arm brake ***
+   armBrake_.Set( brakeBtn_.isPressed() ? Relay::kOn : Relay::kOff );
+
+   //*** if enabled button is pressed and winch solenoid not activated, ***
+   //***   activate the solenoid ***
+   if ( enabled && !winchBrake_.Get() )
+      {
+      //*** activate the solenoid ***
+      winchBrake_.Set( true );
+
+      //*** should give it some time ***
+      return;
+      }
+
+   //*** read the joystick ***
+   float yAxis = stick_->GetY();
+
+   //*** assume we're stopped ***
+   winchAction_ = WINCH_STOPPED;
 
    //*** winch out ***
-   if ( winchOutBtn_.isPressed() && !farLimitReached() )
+   if ( enabled && (yAxis > joystickThreashold) )
       {
-      winchOut();
+      //*** set intended action ***
+      winchAction_ = WINCH_OUT;
+
+      //*** check limit switch ***
+      if ( !farLimitReached() )
+         {
+         speed = yAxis;
+         }
       }
 
    //*** winch in ***
-   else if ( winchInBtn_.isPressed() && !nearLimitReached() )
+   else if ( enabled && (yAxis < -joystickThreashold) )
       {
-      winchIn();
+      //*** set intended action ***
+      winchAction_ = WINCH_IN;
+
+      //*** check limit switch ***
+      if ( !nearLimitReached() )
+         {
+         speed = yAxis;
+         }
       }
 
-   //*** stop winch ***
-   else if ( winchAction_ != WINCH_STOPPED )
-      {
-      stopWinch();
-      }
+   //*** exclusive access ***
+   Synchronized sync( motorSem_ );
 
-   //*** brake ***
-   brake_.Set( brakeBtn_.isPressed() ? Relay::kOn : Relay::kOff );
-
+   //*** set the speed ***
+   winchMotor_.Set( speed );
 }
 
 
@@ -87,54 +106,19 @@ void Climber::checkRealTimeInputs()
    //*** if motor not running, don't bother ***
    if ( winchAction_ == WINCH_STOPPED ) return;
 
-   //*** exclusive access ***
-   Synchronized sync( motorSem_ );
-
    //*** check if we reached a limit ***
    if ( ((winchAction_ == WINCH_OUT) && farLimitReached()  ) ||
         ((winchAction_ == WINCH_IN ) && nearLimitReached() ) )
       {
-      stopWinch();
+      //*** exclusive access ***
+      Synchronized sync( motorSem_ );
+
+      //*** stop the winch motor ***
+      winchMotor_.Set( WinchStoppedSpeed );
+
+      //*** set action state ***
+      winchAction_ = WINCH_STOPPED;
       }
-}
-
-
-//******************************************************************************
-//******************************************************************************
-void Climber::winchOut()
-{
-   //*** set motor speed ***
-   motor1_.Set( WinchOutSpeed );
-   motor2_.Set( WinchOutSpeed );
-
-   //*** set current action ***
-   winchAction_ = WINCH_OUT;
-}
-
-
-//******************************************************************************
-//******************************************************************************
-void Climber::winchIn()
-{
-   //*** set motor speed ***
-   motor1_.Set( WinchInSpeed );
-   motor2_.Set( WinchInSpeed );
-
-   //*** set current action ***
-   winchAction_ = WINCH_IN;
-}
-
-
-//******************************************************************************
-//******************************************************************************
-void Climber::stopWinch()
-{
-   //*** set motor speed ***
-   motor1_.Set( WinchStoppedSpeed );
-   motor2_.Set( WinchStoppedSpeed );
-
-   //*** set current action ***
-   winchAction_ = WINCH_STOPPED;
 }
 
 

@@ -34,30 +34,23 @@ protected:
    bool farLimitReached();
    bool nearLimitReached();
 
-   void winchOut();
-   void winchIn();
-   void stopWinch();
 
+   Joystick       *stick_;
 
-   Joystick *stick_;
+   Jaguar          winchMotor_;
 
-   Jaguar motor1_;
-   Jaguar motor2_;
+   Solenoid        armBrake_;
+   Solenoid        winchBrake_;
 
-   Relay  brake_;
+   DigitalInput    farLimit_;
+   DigitalInput    nearLimit_;
 
-   DigitalInput farLimit_;
-   DigitalInput nearLimit_;
+   WinchAction     winchAction_;
 
-   AnalogChannel  armPot_;
-
-   WinchAction  winchAction_;
-
-   ButtonActivated winchOutBtn_;
-   ButtonActivated winchInBtn_;
+   ButtonActivated winchEnableBtn_;
    ButtonActivated brakeBtn_;
 
-   static SEM_ID motorSem_;
+   static SEM_ID   motorSem_;
 
 };
 
