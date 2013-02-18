@@ -16,15 +16,11 @@
 #define PWM_LEFT_DRIVE_MOTOR       (2)
 #define PWM_RIGHT_DRIVE_MOTOR      (1)
 #define PWM_THROWER_MOTOR          (3)
-#define PWM_CLIMBER_MOTOR          (4)
-#define PWM_FEEDER_MOTOR           (6)
+#define PWM_CLIMBER_MOTOR1         (4)
+#define PWM_CLIMBER_MOTOR2         (5)
+#define RELAY_FEEDER_MOTOR           (1)
+#define PWM_ELEVATOR_MOTOR         (7)
 
-// Relays
-#define RELAY_FEEDER_MOTOR         (1)
-
-// Solenoids
-#define SOL_ARM_BRAKE              (1)
-#define SOL_WINCH_BRAKE            (2)
 
 
 // Digital IO
@@ -39,8 +35,7 @@
 #define DIG_IN_HOOK3_ON_BAR        (7)
 #define DIG_IN_HOOK4_ON_BAR        (8)
 #define DIG_IN_LIFT_CLOSED         (9)
-#define DIG_IN_FAR_LIMIT           (10)
-#define DIG_IN_NEAR_LIMIT          (11)
+//#define DIG_IN_GYRO				   (1)
 
 
 // Joysticks
@@ -55,8 +50,9 @@
 #define BTN_J1_CLIMBER             (4)
 
 // Joystick 2
-#define BTN_J2_WINCH_ENABLE        (6)
-#define BTN_J2_WINCH_BRAKE         (7)
+#define BTN_J2_SPEED_1             (4)
+#define BTN_J2_SPEED_2             (5)
+#define BTN_J2_SPEED_3             (6)
 
 #define THROTTLE_J2_SPEED          (1)
 

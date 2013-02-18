@@ -4,8 +4,8 @@
 #include "WPILib.h"
 #include "RobotDefines.h"
 
-#include "DriveTrain.h"
-#include "Shooter.h"
+#include "Input/DriveTrain.h"
+#include "Shooter/Shooter.h"
 //#include "Climber.h"
 
 
@@ -45,13 +45,12 @@ public:
 protected:
 	
 	//*** SUBSYSTEMS ***
-	//DriveTrain		*drive_;				// robot drive subsystem
-	RobotDrive		*drive_;
+	DriveTrain		*drive_;				// robot drive subsystem
 	Shooter			*shooter_;				// frisbee shooter subsystem
 	//Climber     	*climber_;				// Climber subsystem
 	
 	//*** INPUT ***
-	Joystick    	*driveStick_;			// Drive joystick
+	Joystick	    *driveStick_;			// Drive joystick
 	Joystick    	*throwerStick_;			// Thrower control joystick
       
     //*** MISC VARIABLES ***

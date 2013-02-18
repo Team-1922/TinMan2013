@@ -5,19 +5,17 @@
 /**
  *  Shoot and Run
  */
+
+#define REAL_TIME_DELAY (0.002)
+#define MAX_SHOTS (10)
+
 void TinMan::Autonomous(void)
 {
-   //*** initialize the robot ***
-   initialize();
-
-   //*** REPLACE THIS WITH AUTONOMOUS CODE ***
-
-   while ( IsAutonomous() )
-      {
+	//*** initialize the robot ***
+	initialize();
 
 
-
-      Wait( 0.10 );
-      }
+	while ( IsAutonomous() )
+	{
+	}
 }
-

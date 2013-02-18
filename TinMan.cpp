@@ -19,33 +19,27 @@
  */ 
 //******************************************************************************
 TinMan::TinMan(void) :
-   dsTask_(     "DsTask",     (FUNCPTR)dsTask     ),
-   visionTask_( "VisionTask", (FUNCPTR)visionTask )
+	dsTask_(     "DsTask",     (FUNCPTR)dsTask     ),
+	visionTask_( "VisionTask", (FUNCPTR)visionTask )
 {
+	//*** create joystick objects ***
+	driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK  );
+	throwerStick_ = new Joystick( PORT_THROWER_JOYSTICK );
 
-   //*** create joystick objects ***
-   driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK  );
-   throwerStick_ = new Joystick( PORT_THROWER_JOYSTICK );
-
-   //*** create subsystem objects ***
-   //drive_   = new DriveTrain( driveStick_ );
+	//*** create subsystem objects ***
+	drive_   = new DriveTrain( driveStick_ );
    
-   drive_ = new RobotDrive(PWM_LEFT_DRIVE_MOTOR, PWM_RIGHT_DRIVE_MOTOR);
-   drive_->SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
-   drive_->SetInvertedMotor(RobotDrive::kRearRightMotor, true);
-   
-   shooter_ = new Shooter( driveStick_, throwerStick_ );
-   //climber_ = new Climber;
+	shooter_ = new Shooter( throwerStick_ );
+	//climber_ = new Climber;
 
 
-   //*** get pointer to driver station ***
-   ds_ = DriverStation::GetInstance();
+	//*** get pointer to driver station ***
+	ds_ = DriverStation::GetInstance();
 	
-   //*** clear 'end ds thread' flag ***
-   cancelDsThread_ = false;
+	//*** clear 'end ds thread' flag ***
+	cancelDsThread_ = false;
 
-   initialized_ = false;
-	
+	initialized_ = false;
 }
 
 
@@ -60,7 +54,6 @@ TinMan::~TinMan(void)
 	//*** set flag for threads to cancel ***
 	cancelDsThread_     = true;
 	cancelVisionThread_ = true;
-	
 }
 
 
@@ -73,25 +66,24 @@ TinMan::~TinMan(void)
 void TinMan::initialize()
 {
 	SmartDashboard::PutString("initialize()", "Beginning");
-	
-   //*** if already initialized, then get out ***
-   if ( initialized_ ) return;
+
+	//*** if already initialized, then get out ***
+	if ( initialized_ ) return;
 
 	SmartDashboard::PutString("initialize()", "Past check");
 	
-   //*** start the vision thread ***
-   visionTask_.Start( (INT32)this );
+	//*** start the vision thread ***
+	visionTask_.Start( (INT32)this );
 
 	SmartDashboard::PutString("initialize()", "Past vision task start");
 
-   //*** initialize subsystems ***
-   shooter_->initialize();
-   //climber_->initialize();
+	//*** initialize subsystems ***
+	//climber_->initialize();
 
 	SmartDashboard::PutString("initialize()", "Past Shooter initialize");
 
-   //*** set initialized flag ***
-   initialized_ = true;
+	//*** set initialized flag ***
+	initialized_ = true;
 }
 
 
@@ -113,6 +105,7 @@ void TinMan::OperatorControl(void)
 	while ( IsOperatorControl() )
 	{
 		//*** Check all real-time inputs (limit switches, etc ***
+		checkInputs();
 		checkRealTimeInputs();
 
 		//*** wait a short amount ***
@@ -129,14 +122,16 @@ void TinMan::OperatorControl(void)
 //******************************************************************************
 void TinMan::checkInputs()
 {
-   //*** DriveTrain ***
-   //drive_->checkInputs();
+	SmartDashboard::PutString("checkInputs()", "Checking drive_");
+	//*** DriveTrain ***
+	drive_->checkInputs();
+	SmartDashboard::PutString("checkInputs()", "Not checking");
 
-   //*** Shooter ***
-   shooter_->checkInputs();
+	//*** Shooter ***
+	shooter_->checkInputs();
 
-   //*** Climber ***
-   //climber_->checkInputs();
+	//*** Climber ***
+	//climber_->checkInputs();
 }
 
 
@@ -148,15 +143,11 @@ void TinMan::checkInputs()
 //******************************************************************************
 void TinMan::checkRealTimeInputs()
 {
-   //*** DriveTrain ***
-   //drive_->checkRealTimeInputs();
-	drive_->ArcadeDrive(driveStick_);
+	//*** Shooter ***
+	shooter_->checkRealTimeInputs();
 
-   //*** Shooter ***
-   shooter_->checkRealTimeInputs();
-
-   //*** Climber ***
-   //climber_->checkRealTimeInputs();
+	//*** Climber ***
+	//climber_->checkRealTimeInputs();
 }
 	
 
@@ -169,22 +160,21 @@ void TinMan::checkRealTimeInputs()
 //******************************************************************************
 void TinMan::dsTask( TinMan* tm )
 {
-   //*** get reference to driver station ***
-   DriverStation& ds = *(DriverStation::GetInstance());
+	//*** get reference to driver station ***
+	DriverStation& ds = *(DriverStation::GetInstance());
 	
-   //*** get reference to TinMan ***
-   TinMan& tinMan = *tm;
+	//*** get reference to TinMan ***
+	TinMan& tinMan = *tm;
 	
-   //*** do while in teleop and not cancelled ***
-   do
-      {
-      //*** wait for input from the driver station ***
-      ds.WaitForData();
+	//*** do while in teleop and not cancelled ***
+	do {
+		//*** wait for input from the driver station ***
+		ds.WaitForData();
 
-      //*** check all driverstation inputs ***
-      tinMan.checkInputs();
+		//*** check all driverstation inputs ***
+		tinMan.checkInputs();
 		
-      } while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
+	} while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
 }
 
 
@@ -192,4 +182,3 @@ void TinMan::dsTask( TinMan* tm )
 //*** DO NOT REMOVE THE LAST LINE ****
 //************************************
 START_ROBOT_CLASS(TinMan);
-

@@ -3,8 +3,10 @@
 
 #include "WPILib.h"
 #include "Math.h"
-#include "RobotDefines.h"
+#include "../Input/ButtonActivated.h"
+#include "../RobotDefines.h"
 
+#define BTN_AIM (8)
 
 //***********************************************************
 
@@ -28,9 +30,15 @@ public:
 	
 protected:
 	// Motors
-	Jaguar* rightDrive_;
-	Jaguar* leftDrive_;
+	Jaguar rightDrive_;
+	Jaguar leftDrive_;
 	
+	//Robot Drive
+	RobotDrive drive_;
+	
+	//Button for aiming.
+	ButtonActivated aim_;
+
 	//Joystick
 	Joystick *stick_;
 	
@@ -40,7 +48,7 @@ protected:
 	float ignoreRange;
 	
 	//Modify the joystick value.
-	float modifyJoystick(float);
+	float modifyMagnitude(float);
 };
 #endif
 
