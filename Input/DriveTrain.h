@@ -6,7 +6,9 @@
 #include "../Input/ButtonActivated.h"
 #include "../RobotDefines.h"
 
-#define BTN_AIM (8)
+typedef enum { TURN_RIGHT, TURN_LEFT } TurnDir;
+
+typedef enum { NO_ACTION, DRIVE_ACTION, SPIN_ACTION } DriveAction;
 
 //***********************************************************
 
@@ -19,13 +21,14 @@ public:
 	
 	void checkInputs();
 	void checkRealTimeInputs();
-	void autoDrive();
 
 	//Autonomous / functions
 	
-	void driveStraight( int inches );
-	void spin( int degrees );
-	void turn( int inches, int degrees );
+	void driveStraight( float speed, int msec );
+	void spin( TurnDir dir, float speed, int degrees );
+
+   //*** returns true if driveStraight or spin has completed ***
+   bool finishedAction();
 
 	
 protected:
@@ -49,6 +52,15 @@ protected:
 	
 	//Modify the joystick value.
 	float modifyMagnitude(float);
+
+   int driveCount_;
+   DriveAction driveAction_;
+   
+   float tgtHdg_;
+
+   Gyro  gyro_;
+
+
 };
 #endif
 

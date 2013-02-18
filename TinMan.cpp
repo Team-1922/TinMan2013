@@ -7,8 +7,13 @@
 //******************************************************************************
 #include "TinMan.h"
 
+#include "Input/DriveTrain.h"
+#include "Climber.h"
+#include "Shooter/Shooter.h"
+
 //*** constants ***
 
+#define MAIN_LOOP_DELAY (0.1)
 #define REAL_TIME_DELAY (0.001)
 
 
@@ -19,8 +24,8 @@
  */ 
 //******************************************************************************
 TinMan::TinMan(void) :
-	dsTask_(     "DsTask",     (FUNCPTR)dsTask     ),
-	visionTask_( "VisionTask", (FUNCPTR)visionTask )
+	dsTask_( "DsTask",       (FUNCPTR)dsTask       ),
+	rtTask_( "RealTimeTask", (FUNCPTR)rtTask )
 {
 	//*** create joystick objects ***
 	driveStick_   = new Joystick( PORT_DRIVER_JOYSTICK  );
@@ -30,14 +35,16 @@ TinMan::TinMan(void) :
 	drive_   = new DriveTrain( driveStick_ );
    
 	shooter_ = new Shooter( throwerStick_ );
-	//climber_ = new Climber;
+
+   climber_ = new Climber( throwerStick_ );
 
 
 	//*** get pointer to driver station ***
-	ds_ = DriverStation::GetInstance();
+//	ds_ = DriverStation::GetInstance();
 	
 	//*** clear 'end ds thread' flag ***
 	cancelDsThread_ = false;
+	cancelRtThread_ = false;
 
 	initialized_ = false;
 }
@@ -52,8 +59,8 @@ TinMan::TinMan(void) :
 TinMan::~TinMan(void)
 {
 	//*** set flag for threads to cancel ***
-	cancelDsThread_     = true;
-	cancelVisionThread_ = true;
+	cancelDsThread_ = true;
+	cancelRtThread_ = true;
 }
 
 
@@ -65,22 +72,14 @@ TinMan::~TinMan(void)
 //******************************************************************************
 void TinMan::initialize()
 {
-	SmartDashboard::PutString("initialize()", "Beginning");
-
 	//*** if already initialized, then get out ***
 	if ( initialized_ ) return;
 
-	SmartDashboard::PutString("initialize()", "Past check");
-	
 	//*** start the vision thread ***
-	visionTask_.Start( (INT32)this );
-
-	SmartDashboard::PutString("initialize()", "Past vision task start");
+	rtTask_.Start( (INT32)this );
 
 	//*** initialize subsystems ***
-	//climber_->initialize();
-
-	SmartDashboard::PutString("initialize()", "Past Shooter initialize");
+	climber_->initialize();
 
 	//*** set initialized flag ***
 	initialized_ = true;
@@ -100,16 +99,15 @@ void TinMan::OperatorControl(void)
 
 	//*** start the driver station input thread ***
 	dsTask_.Start( (INT32)this );
+
+   //*** make sure thrower is at full speed ***
+   shooter_->setThrower( 1.0 );
 	
 	//*** main while loop ***
 	while ( IsOperatorControl() )
 	{
-		//*** Check all real-time inputs (limit switches, etc ***
-		checkInputs();
-		checkRealTimeInputs();
-
 		//*** wait a short amount ***
-		Wait( REAL_TIME_DELAY );
+		Wait( MAIN_LOOP_DELAY );
 	}
 }
 
@@ -122,16 +120,14 @@ void TinMan::OperatorControl(void)
 //******************************************************************************
 void TinMan::checkInputs()
 {
-	SmartDashboard::PutString("checkInputs()", "Checking drive_");
 	//*** DriveTrain ***
 	drive_->checkInputs();
-	SmartDashboard::PutString("checkInputs()", "Not checking");
 
 	//*** Shooter ***
 	shooter_->checkInputs();
 
 	//*** Climber ***
-	//climber_->checkInputs();
+	climber_->checkInputs();
 }
 
 
@@ -147,7 +143,7 @@ void TinMan::checkRealTimeInputs()
 	shooter_->checkRealTimeInputs();
 
 	//*** Climber ***
-	//climber_->checkRealTimeInputs();
+	climber_->checkRealTimeInputs();
 }
 	
 
@@ -167,14 +163,36 @@ void TinMan::dsTask( TinMan* tm )
 	TinMan& tinMan = *tm;
 	
 	//*** do while in teleop and not cancelled ***
-	do {
+	while ( !tinMan.dsThreadCancel() )
+      {
 		//*** wait for input from the driver station ***
 		ds.WaitForData();
 
 		//*** check all driverstation inputs ***
 		tinMan.checkInputs();
-		
-	} while( !tinMan.dsThreadCancel() && ds.IsOperatorControl() );
+      }
+}
+
+
+//******************************************************************************
+//******************************************************************************
+/**
+ * Real Time thread 
+ */
+void TinMan::rtTask( TinMan* tm )
+{
+	//*** get reference to TinMan ***
+	TinMan& tinMan = *tm;
+	
+	//*** do while not cancelled ***
+	while ( !tinMan.rtThreadCancel() )
+      {
+      //*** real time update ***
+      tinMan.checkRealTimeInputs();
+
+      //*** wait for a msec ***
+      Wait( REAL_TIME_DELAY );
+	}
 }
 
 

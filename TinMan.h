@@ -4,9 +4,10 @@
 #include "WPILib.h"
 #include "RobotDefines.h"
 
-#include "Input/DriveTrain.h"
-#include "Shooter/Shooter.h"
-//#include "Climber.h"
+class DriveTrain;
+class Shooter;
+class Climber;
+
 
 
 //******************************************************************************
@@ -40,14 +41,14 @@ public:
 	bool dsThreadCancel() { return cancelDsThread_; };
 
 	//*** indicates DS thread should be cancelled ***
-	bool visionThreadCancel() { return cancelVisionThread_; };
+	bool rtThreadCancel() { return cancelRtThread_; };
 	
 protected:
 	
 	//*** SUBSYSTEMS ***
-	DriveTrain		*drive_;				// robot drive subsystem
+	DriveTrain		*drive_;				   // robot drive subsystem
 	Shooter			*shooter_;				// frisbee shooter subsystem
-	//Climber     	*climber_;				// Climber subsystem
+	Climber     	*climber_;				// Climber subsystem
 	
 	//*** INPUT ***
 	Joystick	    *driveStick_;			// Drive joystick
@@ -55,10 +56,9 @@ protected:
       
     //*** MISC VARIABLES ***
     Task        	dsTask_;				// Driverstation task
-    Task        	visionTask_;			// Vision task
-    DriverStation 	*ds_;					// Driverstation pointer
+    Task        	rtTask_;			    // Real Time input task
 	bool      		cancelDsThread_;		// flag to cancel ds thread
-	bool        	cancelVisionThread_;	// flag to cancel vision thread
+	bool        	cancelRtThread_;	    // flag to cancel rt thread
     bool        	initialized_;			// initialized flag
 	
     void initialize();
@@ -68,8 +68,11 @@ protected:
 	//*** DriverStation thread ***
 	static void dsTask( TinMan* p );
 	
-	//*** Vision thread ***                             
-	static void visionTask( TinMan *p );
+	//*** RealTime update thread ***                             
+	static void rtTask( TinMan *p );
+	
+	//*** for autonomous ***
+	bool waitTillFinished( DriveTrain* dt );
 };
 
 #endif

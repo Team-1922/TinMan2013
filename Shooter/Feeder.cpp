@@ -4,8 +4,8 @@
 //Constructor calls the FeederMotor, FeedButton, and FeedSwitch constructors.
 Feeder::Feeder(Joystick *stick):
 	feederMotor_(RELAY_FEEDER_MOTOR),
-	feederButton_(stick, BTN_J1_SHOOT),
-	feederSwitch_(DIG_IN_FEED_LEVER_FWD)
+	feederButton_(stick, BTN_J2_SHOOT),
+	feederSwitch_(DIG_IN_FEEDER_LIMIT)
 {
 	//Default state of the feeder is stopped.
 	isStarting_ = false;
