@@ -46,7 +46,6 @@ protected:
 	Joystick *stick_;
 	
 	//Variables for input modifier.
-	int curveModifier;
 	float startingPoint;
 	float ignoreRange;
 	

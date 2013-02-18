@@ -134,23 +134,16 @@ float DriveTrain::modifyMagnitude(float axis)
 		return 0.0;
 	}
 	
-	//Create a variable to hold the modified input.
-	float modified = 0;
+	axis *= (1.0 - startingPoint);
 	
 	//Check if the axis is positive or negative.
 	if(axis > 0) {
-		modified = powf(axis, curveModifier);
-		modified /= startingPoint;
-		modified += (1.0 - (1.0 / startingPoint));
+		axis += startingPoint;
 	}
-	else if(axis < 0) {
-		if(curveModifier % 2 == 0) {
-			modified = -powf(axis, curveModifier);
-			modified /= startingPoint;
-			modified -= (1.0 - (1.0 / startingPoint));
-		}
+	else {
+		axis -= startingPoint;
 	}
 	
 	//Return the modified value.
-	return modified;
+	return axis;
 }
