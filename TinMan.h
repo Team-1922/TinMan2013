@@ -6,7 +6,7 @@
 
 class DriveTrain;
 class Shooter;
-class Climber;
+//class Climber;
 
 
 
@@ -48,7 +48,7 @@ protected:
 	//*** SUBSYSTEMS ***
 	DriveTrain		*drive_;				   // robot drive subsystem
 	Shooter			*shooter_;				// frisbee shooter subsystem
-	Climber     	*climber_;				// Climber subsystem
+	//Climber     	*climber_;				// Climber subsystem
 	
 	//*** INPUT ***
 	Joystick	    *driveStick_;			// Drive joystick

@@ -41,9 +41,9 @@ void Shooter::checkRealTimeInputs()
 //******************************************************************************
 //******************************************************************************
 //Shoot
-void Shooter::shoot()
+void Shooter::shoot(bool state)
 {
-	feeder_.feed();
+	feeder_.feed(state);
 }
 
 

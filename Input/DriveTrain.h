@@ -25,10 +25,10 @@ public:
 	//Autonomous / functions
 	
 	void driveStraight( float speed, int msec );
-	void spin( TurnDir dir, float speed, int degrees );
+	void spin( int degrees );
 
-   //*** returns true if driveStraight or spin has completed ***
-   bool finishedAction();
+	//*** returns true if driveStraight or spin has completed ***
+	bool finishedAction();
 
 	
 protected:
@@ -41,24 +41,26 @@ protected:
 	
 	//Button for aiming.
 	ButtonActivated aim_;
+	ButtonActivated forward_;
+	ButtonActivated backward_;
+	ButtonActivated left_;
+	ButtonActivated right_;
+	
+	//Gyro for position we are facing.
+	Gyro  gyro_;
 
 	//Joystick
 	Joystick *stick_;
+
+	//Variables used to set the speed we go.
+	float turning_;
+	float magnitude_;
+
+	int driveCount_;
+	DriveAction driveAction_;
 	
-	//Variables for input modifier.
-	float startingPoint;
-	float ignoreRange;
-	
-	//Modify the joystick value.
-	float modifyMagnitude(float);
-
-   int driveCount_;
-   DriveAction driveAction_;
-   
-   float tgtHdg_;
-
-   Gyro  gyro_;
-
+	int getGyro();
+	int coerceAngle(float);
 
 };
 #endif

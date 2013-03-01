@@ -8,7 +8,7 @@
 #include "TinMan.h"
 
 #include "Input/DriveTrain.h"
-#include "Climber.h"
+//#include "Climber.h"
 #include "Shooter/Shooter.h"
 
 //*** constants ***
@@ -36,7 +36,7 @@ TinMan::TinMan(void) :
    
 	shooter_ = new Shooter( throwerStick_ );
 
-   climber_ = new Climber( throwerStick_ );
+    //climber_ = new Climber( throwerStick_ );
 
 
 	//*** get pointer to driver station ***
@@ -79,7 +79,7 @@ void TinMan::initialize()
 	rtTask_.Start( (INT32)this );
 
 	//*** initialize subsystems ***
-	climber_->initialize();
+	//climber_->initialize();
 
 	//*** set initialized flag ***
 	initialized_ = true;
@@ -127,7 +127,7 @@ void TinMan::checkInputs()
 	shooter_->checkInputs();
 
 	//*** Climber ***
-	climber_->checkInputs();
+	//climber_->checkInputs();
 }
 
 
@@ -139,11 +139,14 @@ void TinMan::checkInputs()
 //******************************************************************************
 void TinMan::checkRealTimeInputs()
 {
+	//*** Drive ***
+	drive_->checkRealTimeInputs();
+	
 	//*** Shooter ***
 	shooter_->checkRealTimeInputs();
 
 	//*** Climber ***
-	climber_->checkRealTimeInputs();
+	//climber_->checkRealTimeInputs();
 }
 	
 

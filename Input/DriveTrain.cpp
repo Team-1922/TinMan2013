@@ -9,22 +9,25 @@ DriveTrain::DriveTrain( Joystick* joystick ) :
 	leftDrive_( PWM_LEFT_DRIVE_MOTOR ),
 	drive_( &leftDrive_, &rightDrive_ ),
 	aim_( joystick, BTN_J1_AIM ),
-   gyro_( ANA_IN_GYRO )
+	forward_(joystick, BTN_J1_FWD),
+	backward_(joystick, BTN_J1_BACK),
+	left_(joystick, BTN_J1_LEFT),
+	right_(joystick, BTN_J1_RIGHT),
+	gyro_( ANA_IN_GYRO )
 {
 	//Joystick
 	stick_ = joystick;
 	
-   //*** need both motors inverted ***
+	//*** need both motors inverted ***
 	drive_.SetInvertedMotor(RobotDrive::kRearLeftMotor, true);
 	drive_.SetInvertedMotor(RobotDrive::kRearRightMotor, true);
 	
-   driveCount_   = 0;
-   driveAction_  = NO_ACTION;
-
-	//Variables for input modifier.
-	curveModifier = 2;
-	startingPoint = 0.2;
-	ignoreRange = 0.1;
+	//Set the magnitude and turning to 0 as default.
+	magnitude_ = 0.0;
+	turning_ = 0.0;
+	
+	driveCount_   = 0;
+	driveAction_  = NO_ACTION;
 }
 
 
@@ -33,14 +36,30 @@ DriveTrain::DriveTrain( Joystick* joystick ) :
 
 void DriveTrain::checkInputs()
 {
-   //*** using 'aim' feature ***
+	//Make magnitude 0.0 if the driver is aiming.
 	if(aim_.isPressed()) {
-		drive_.ArcadeDrive( 0, stick_->GetX() );
+		magnitude_ = 0.0;
 	}
-
-   //*** normal driving ***
 	else {
-		drive_.ArcadeDrive( stick_ );
+		magnitude_ = stick_->GetY();
+	}
+	
+	//Spin the robot to the direction you wish to go.
+	if(forward_.isPressed()) {
+		spin(0);
+	}
+	else if(backward_.isPressed()) {
+		spin(180);
+	}
+	else if(left_.isPressed()) {
+		spin(270);
+	}
+	else if(right_.isPressed()) {
+		spin(90);
+	}
+	else {
+		//Otherwise simply set the joystick value to the turning.
+		turning_ = stick_->GetX();
 	}
 }
 
@@ -51,36 +70,29 @@ void DriveTrain::checkRealTimeInputs()
 {
    //*** check driving straight ***
    if ( driveCount_ > 0 )
-      {
+   {
       //*** decrement the count ***
       driveCount_--;
 
       //*** check if we're done ***
       if ( driveCount_ == 0 )
-         {
-         //*** stop the motors ***
-         drive_.Drive( 0.0, 0.0 );
-
-         //*** change the action ***
-         driveAction_ = NO_ACTION;
-         }
-      }
-
-   //*** check spinning ***
-   if ( driveAction_ == SPIN_ACTION )
       {
-      float curHdg = fabs( gyro_.GetAngle() );
-
-      //*** check for end ***
-      if ( curHdg > tgtHdg_ )
-         {
          //*** stop the motors ***
          drive_.Drive( 0.0, 0.0 );
 
          //*** change the action ***
          driveAction_ = NO_ACTION;
-         }
       }
+   }
+
+   //Square and negate the turning if it is negative.
+   if(turning_ < 0) {
+	   turning_ *= -turning_;
+   } else {
+	   turning_ *= turning_;
+   }
+   
+   drive_.ArcadeDrive(magnitude_, turning_);
 }
 
 
@@ -109,41 +121,44 @@ void DriveTrain::driveStraight( float speed, int msec )
 
 //************************************************************************
 //************************************************************************
-void DriveTrain::spin( TurnDir dir, float speed, int degrees )
+void DriveTrain::spin( int target )
 {
-   //*** reset the gyro ***
-   gyro_.Reset();
-
-   //*** set target heading ***
-   tgtHdg_ = degrees;
-
-   //*** set action ***
-   driveAction_ = SPIN_ACTION;
-
-   //*** start it spinning ***
-   drive_.Drive( 0.0, (dir == TURN_RIGHT) ? speed : -speed );
+	//Get the gyro and coerce the angle.
+	int gyro = getGyro();
+	target = coerceAngle(target);
+	
+	//Get the difference between the target and gyro.
+	int difference = target - gyro;
+	
+	//If the difference is greater than 180.
+	if(difference > 180) {
+		//Subtract 360.
+		difference -= 360;
+	}
+	//If the difference is less than -180.
+	else if(difference < -180) {
+		//Add 360.
+		difference += 360;
+	}
+	
+	//Set the turning value between +-0.0 and +-1.0 
+	turning_ = difference / 180.0;
 }
 
-
-//************************************************************************
-//************************************************************************
-float DriveTrain::modifyMagnitude(float axis)
+int DriveTrain::getGyro()
 {
-	//Return 0 if the axis is between the ignore range.
-	if(axis < ignoreRange && axis > -ignoreRange) {
-		return 0.0;
+	//Get the angle of the robot.
+	return coerceAngle(gyro_.GetAngle());
+}
+
+int DriveTrain::coerceAngle(float angle)
+{
+	//Set the angle to positive.
+	while(angle < 0)
+	{
+		angle += 360;
 	}
 	
-	axis *= (1.0 - startingPoint);
-	
-	//Check if the axis is positive or negative.
-	if(axis > 0) {
-		axis += startingPoint;
-	}
-	else {
-		axis -= startingPoint;
-	}
-	
-	//Return the modified value.
-	return axis;
+	//Return the angle between 0-359.
+	return (int)angle % 360;
 }

@@ -47,7 +47,11 @@
 // Joystick Buttons
 
 // Joystick 1
-#define BTN_J1_AIM                 (1)
+#define BTN_J1_AIM                 (8)
+#define BTN_J1_FWD				   (3)
+#define BTN_J1_BACK				   (2)
+#define BTN_J1_LEFT				   (4)
+#define BTN_J1_RIGHT			   (5)
 
 // Joystick 2
 #define BTN_J2_SHOOT               (1)

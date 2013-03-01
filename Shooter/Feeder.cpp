@@ -3,7 +3,7 @@
 
 //Constructor calls the FeederMotor, FeedButton, and FeedSwitch constructors.
 Feeder::Feeder(Joystick *stick):
-	feederMotor_(RELAY_FEEDER_MOTOR),
+	feederMotor_(PWM_FEEDER_MOTOR),
 	feederButton_(stick, BTN_J2_SHOOT),
 	feederSwitch_(DIG_IN_FEEDER_LIMIT)
 {
@@ -17,7 +17,9 @@ void Feeder::checkInputs()
 {
 	//Call shoot when the button is pressed.
 	if(feederButton_.isPressed()) {
-		feed();
+		feed(true);
+	} else {
+		feed(false);
 	}
 	
 	return;
@@ -25,8 +27,9 @@ void Feeder::checkInputs()
 
 void Feeder::checkRealTimeInputs()
 {
+	SmartDashboard::PutNumber("Limit Switch", feederSwitch_.Get());
 	//If feeding, return.
-	if(!isFeeding_) return;
+	/*if(!isFeeding_) return;
 	
 	//Set switchState to the feeder switch.
 	bool switchState = !(bool)feederSwitch_.Get();
@@ -50,16 +53,22 @@ void Feeder::checkRealTimeInputs()
 		isFeeding_ = false;
 		
 		feederMotor_.Set(0.0);
-	}
+	}*/
 
 	return;
 }
 
 //Feed the frisbee to the thrower.
-void Feeder::feed()
+void Feeder::feed(bool state)
 {
+	if(state) {
+		feederMotor_.Set(0.75);
+	} else {
+		feederMotor_.Set(0.0);
+	}
+	
 	//If the feeder is ready to feed.
-	if(!isFeeding_) {
+	/*if(!isFeeding_) {
 		
 		//Set isFeeding to true and start the motor.
 		isFeeding_ = true;
@@ -67,7 +76,7 @@ void Feeder::feed()
 	}
 	
 	//Set the starting flag to the limit switch.
-	isStarting_ = feederSwitch_.Get();
+	isStarting_ = feederSwitch_.Get();*/
 	
 	return;
 }
