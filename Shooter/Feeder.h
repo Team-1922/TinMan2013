@@ -19,7 +19,7 @@ public:
 	void checkInputs();
 	void checkRealTimeInputs();
 
-	void feed(bool); //Feed the frisbee into the thrower.
+	void feed(); //Feed the frisbee into the thrower.
 	
 	bool isFeeding();
 	

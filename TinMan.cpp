@@ -8,7 +8,7 @@
 #include "TinMan.h"
 
 #include "Input/DriveTrain.h"
-//#include "Climber.h"
+#include "Climber.h"
 #include "Shooter/Shooter.h"
 
 //*** constants ***
@@ -24,7 +24,7 @@
  */ 
 //******************************************************************************
 TinMan::TinMan(void) :
-	dsTask_( "DsTask",       (FUNCPTR)dsTask       ),
+	dsTask_( "DsTask",       (FUNCPTR)dsTask ),
 	rtTask_( "RealTimeTask", (FUNCPTR)rtTask )
 {
 	//*** create joystick objects ***
@@ -36,11 +36,7 @@ TinMan::TinMan(void) :
    
 	shooter_ = new Shooter( throwerStick_ );
 
-    //climber_ = new Climber( throwerStick_ );
-
-
-	//*** get pointer to driver station ***
-//	ds_ = DriverStation::GetInstance();
+    climber_ = new Climber( throwerStick_ );
 	
 	//*** clear 'end ds thread' flag ***
 	cancelDsThread_ = false;
@@ -77,9 +73,6 @@ void TinMan::initialize()
 
 	//*** start the vision thread ***
 	rtTask_.Start( (INT32)this );
-
-	//*** initialize subsystems ***
-	//climber_->initialize();
 
 	//*** set initialized flag ***
 	initialized_ = true;
@@ -127,7 +120,7 @@ void TinMan::checkInputs()
 	shooter_->checkInputs();
 
 	//*** Climber ***
-	//climber_->checkInputs();
+	climber_->checkInputs();
 }
 
 
@@ -146,7 +139,7 @@ void TinMan::checkRealTimeInputs()
 	shooter_->checkRealTimeInputs();
 
 	//*** Climber ***
-	//climber_->checkRealTimeInputs();
+	climber_->checkRealTimeInputs();
 }
 	
 
@@ -171,8 +164,11 @@ void TinMan::dsTask( TinMan* tm )
 		//*** wait for input from the driver station ***
 		ds.WaitForData();
 
-		//*** check all driverstation inputs ***
-		tinMan.checkInputs();
+		//Check if we are in operator control, just in case.
+		if(tm->IsOperatorControl()) {
+			//*** check all driverstation inputs ***
+			tinMan.checkInputs();
+		}
       }
 }
 

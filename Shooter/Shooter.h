@@ -25,7 +25,7 @@ public:
 	void checkRealTimeInputs();
 
 	//Functions to shoot and start the thrower.
-	void shoot(bool);
+	void shoot();
 	void setThrower(float);
 	
 	bool isShooting();

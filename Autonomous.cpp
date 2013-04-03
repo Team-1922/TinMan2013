@@ -12,50 +12,22 @@
  *  Shoot and Run
  */
 
-#define NUM_AUTO_SHOTS (10)
-
 void TinMan::Autonomous(void)
 {
-   //int numShots = 0;
-
 	//*** initialize the robot ***
 	initialize();
 
-   //*** set thrower speed to autonomous value ***
-   shooter_->setThrower( AUTONOMOUS_THROWER_SPEED );
-   Wait(1.500);
+	//*** set thrower speed to autonomous value ***
+	shooter_->setThrower( AUTONOMOUS_THROWER_SPEED );
+	Wait(4.000);
    
-   for(int i=0; i<5 && IsAutonomous(); i++) {
-	   shooter_->shoot(true);
-	   //Wait(0.850);
-	   //shooter_->shoot(false);
-	   //Wait(0.500);
-   }
-   
-
-   //*** shoot for a number of times ***
-   /*while ( (numShots < NUM_AUTO_SHOTS) && IsAutonomous() )
-      {
-      //*** wait till we're able to shoot ***
-      while ( shooter_->isShooting() && IsAutonomous() ) 
-         {
-         Wait( SHOOTER_WAIT );
-         }
-
-      //*** do we need to exit autonomous??? ***
-      if ( !IsAutonomous() ) return;
-
-      //*** shoot ***
-      shooter_->shoot();
-
-      //*** increment shot count ***
-      numShots++;
-
-      //*** delay for a bit to let shooter get back up to speed ***
-      Wait( SHOOTER_DELAY );
-      }
+	while(IsAutonomous()) {
+		shooter_->shoot();
+		Wait(1.000);
+	}
 
    //*** back up a bit ***
+	#if 0
    drive_->driveStraight( -0.3f, 1000 );
 
    if ( !waitTillFinished( drive_ ) ) return;
@@ -63,8 +35,8 @@ void TinMan::Autonomous(void)
    //*** spin 180 ***
    while(IsAutonomous()) {
 	   drive_->spin( 180 );
-   }*/
-
+   }
+	#endif
 }
 
 //******************************************************************************

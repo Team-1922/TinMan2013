@@ -17,9 +17,7 @@ void Feeder::checkInputs()
 {
 	//Call shoot when the button is pressed.
 	if(feederButton_.isPressed()) {
-		feed(true);
-	} else {
-		feed(false);
+		feed();
 	}
 	
 	return;
@@ -29,10 +27,10 @@ void Feeder::checkRealTimeInputs()
 {
 	SmartDashboard::PutNumber("Limit Switch", feederSwitch_.Get());
 	//If feeding, return.
-	/*if(!isFeeding_) return;
+	if(!isFeeding_) return;
 	
 	//Set switchState to the feeder switch.
-	bool switchState = !(bool)feederSwitch_.Get();
+	bool switchState = (bool)feederSwitch_.Get();
 	
 	//Check if the feeder is starting.
 	if(isStarting_) {
@@ -53,22 +51,17 @@ void Feeder::checkRealTimeInputs()
 		isFeeding_ = false;
 		
 		feederMotor_.Set(0.0);
-	}*/
+	}
 
 	return;
 }
 
 //Feed the frisbee to the thrower.
-void Feeder::feed(bool state)
+void Feeder::feed()
 {
-	if(state) {
-		feederMotor_.Set(0.75);
-	} else {
-		feederMotor_.Set(0.0);
-	}
 	
 	//If the feeder is ready to feed.
-	/*if(!isFeeding_) {
+	if(!isFeeding_) {
 		
 		//Set isFeeding to true and start the motor.
 		isFeeding_ = true;
@@ -76,7 +69,7 @@ void Feeder::feed(bool state)
 	}
 	
 	//Set the starting flag to the limit switch.
-	isStarting_ = feederSwitch_.Get();*/
+	isStarting_ = feederSwitch_.Get();
 	
 	return;
 }

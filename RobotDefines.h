@@ -25,7 +25,7 @@
 
 // Solenoids
 #define SOL_ARM_BRAKE              (1)
-#define SOL_WINCH_BRAKE            (2)
+#define SOL_WINCH_BRAKE            (10)
 
 
 // Digital IO

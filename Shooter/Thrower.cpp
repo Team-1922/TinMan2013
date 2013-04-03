@@ -29,10 +29,14 @@ void Thrower::checkInputs()
 }
 
 //The thrower does not have any real time inputs to check.
-void Thrower::checkRealTimeInputs() {}
+void Thrower::checkRealTimeInputs()
+{
+	
+}
 
 //Set the speed of the motor.
 void Thrower::setSpeed(float s)
 {
+	SmartDashboard::PutNumber("Thrower Speed", s);
 	ThrowerMotor_.Set(s);
 }
